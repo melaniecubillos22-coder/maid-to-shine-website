@@ -539,8 +539,23 @@ function submitForm(){
     document.getElementById('bookForm').querySelectorAll('input,select,textarea,.form-group,.form-row,.form-submit,.form-note,h3,p').forEach(f=>f.style.display='none');
     document.getElementById('successMsg').style.display='block';
 }
+async function toggleChat() {
+const msg = prompt("Hi! How can Maid to Shine help you today? 🌸");
 
-function toggleChat(){alert('Chat feature coming soon! Call us at (786) 475-9638 🌸')}
+if (!msg) return;
+
+const res = await fetch("https://messaging-agent-bboj.onrender.com/chat", {
+method: "POST",
+headers: {
+"Content-Type": "application/json"
+},
+body: JSON.stringify({ message: msg })
+});
+
+const data = await res.json();
+
+alert("Maid to Shine: " + data.response);
 </script>
+
 </body>
 </html>
