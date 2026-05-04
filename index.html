@@ -518,10 +518,15 @@ footer{background:var(--deeper);padding:1.5rem 2.5rem;display:flex;justify-conte
 🌸 Shine — Booking Agent
 <button onclick="toggleChat()" style="float:right;background:none;border:none;color:white;font-size:20px;">×</button>
 </div>
+function toggleChat() {
+const box = document.getElementById("chatBox");
+if (!box) return;
+box.style.display = box.style.display === "block" ? "none" : "block";
+}
 
 <div id="chatMessages" style="height:300px;overflow-y:auto;padding:14px;background:#fff7fb;">
 <div style="background:white;padding:10px;border-radius:12px;margin-bottom:10px;">
-Hi! How can I help with your cleaning today?
+Hi! Welcome to Maid to Shine! How can we help you today?
 </div>
 </div>
 
