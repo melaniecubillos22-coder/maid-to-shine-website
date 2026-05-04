@@ -536,87 +536,92 @@ Hi! How can I help with your cleaning today?
 </button>
 
 <script>
-function toggleChat() {
-  const box = document.getElementById('chatBox');
-  box.style.display = box.style.display === 'block' ? 'none' : 'block';
+async function handleChat(customMessage = null) {
+const input = document.getElementById("chatInput");
+const chat = document.getElementById("chatMessages");
+
+const message = customMessage || input.value.trim();
+if (!message) return;
+
+input.value = "";
+
+// USER MESSAGE
+chat.innerHTML += `
+<div style="text-align:right;margin-bottom:8px;">
+<div style="display:inline-block;background:#d63384;color:white;padding:8px 12px;border-radius:12px;">
+${message}
+</div>
+</div>
+`;
+
+// TRY BACKEND
+let replyText = "";
+
+try {
+const res = await fetch("https://messaging-agent-bboj.onrender.com/chat", {
+method: "POST",
+headers: {
+"Content-Type": "application/json"
+},
+body: JSON.stringify({ message })
+});
+
+const data = await res.json();
+replyText = data.response || "";
+} catch (err) {
+replyText = "";
 }
 
-async function sendChat() {
-  const input = document.getElementById('chatInput');
-  const messages = document.getElementById('chatMessages');
-  const message = input.value.trim();
-  if (!message) return;
-
-  messages.innerHTML += `<div style="text-align:right;margin-bottom:10px;"><div style="display:inline-block;background:#d63384;color:white;padding:10px;border-radius:12px;">${message}</div></div>`;
-  input.value = '';
-
-  const typing = document.createElement('div');
-  typing.id = 'typing';
-  typing.style.cssText = 'background:white;padding:10px;border-radius:12px;margin-bottom:10px;';
-  typing.textContent = 'Shine is typing...';
-  messages.appendChild(typing);
-  messages.scrollTop = messages.scrollHeight;
-
-  try {
-    const res = await fetch('https://messaging-agent-bboj.onrender.com/chat', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ message })
-    });
-    const data = await res.json();
-    typing.remove();
-
-    messages.innerHTML += `<div style="margin-bottom:10px;"><div style="display:inline-block;background:white;padding:10px;border-radius:12px;">${data.response || 'Sorry, I had trouble replying. Please call (786) 327-3682.'}</div></div>`;
-  } catch (error) {
-    typing.remove();
-    messages.innerHTML += `<div style="background:white;padding:10px;border-radius:12px;margin-bottom:10px;">Please call or text us at (786) 327-3682 🌸</div>`;
-  }
-
-  messages.scrollTop = messages.scrollHeight;
+// FALLBACK IF BACKEND FAILS
+if (!replyText) {
+replyText = "I can help you book a cleaning right now 👇";
 }
 
-document.addEventListener('keydown', function(e) {
-  if (e.key === 'Enter' && document.activeElement.id === 'chatInput') {
-    sendChat();
-  }
+// BOT MESSAGE
+chat.innerHTML += `
+<div style="margin-bottom:8px;">
+<div style="display:inline-block;background:#fff;padding:10px;border-radius:12px;">
+${replyText}
+</div>
+</div>
+`;
+
+addQuickOptions();
+
+chat.scrollTop = chat.scrollHeight;
+}
+
+function addQuickOptions() {
+const chat = document.getElementById("chatMessages");
+
+const container = document.createElement("div");
+container.style.display = "flex";
+container.style.flexWrap = "wrap";
+container.style.gap = "6px";
+container.style.margin = "10px 0";
+
+const options = [
+"Get a Quote",
+"Deep Cleaning",
+"Airbnb Cleaning",
+"Move Out Cleaning"
+];
+
+options.forEach(opt => {
+const btn = document.createElement("button");
+btn.innerText = opt;
+btn.style.padding = "6px 10px";
+btn.style.borderRadius = "12px";
+btn.style.border = "none";
+btn.style.background = "#f4c2d7";
+btn.style.cursor = "pointer";
+
+btn.onclick = () => handleChat(opt);
+
+container.appendChild(btn);
 });
 
-document.querySelectorAll('a[href^="#"]').forEach(a => {
-  a.addEventListener('click', e => {
-    const t = document.querySelector(a.getAttribute('href'));
-    if (t) {
-      e.preventDefault();
-      t.scrollIntoView({ behavior: 'smooth' });
-    }
-  });
-});
-
-const observer = new IntersectionObserver(entries => {
-  entries.forEach(entry => {
-    if (entry.isIntersecting) {
-      entry.target.style.opacity = '1';
-      entry.target.style.transform = 'translateY(0)';
-    }
-  });
-}, { threshold: 0.08 });
-
-document.querySelectorAll('.svc-card,.why-item,.price-card,.testi-card').forEach(el => {
-  el.style.opacity = '0';
-  el.style.transform = 'translateY(18px)';
-  el.style.transition = 'opacity 0.5s, transform 0.5s';
-  observer.observe(el);
-});
-
-function submitForm() {
-  const name = document.getElementById('fname').value.trim();
-  const phone = document.getElementById('fphone').value.trim();
-  const service = document.getElementById('fservice').value;
-  if (!name || !phone || !service) {
-    alert('Please fill required fields 🌸');
-    return;
-  }
-  document.getElementById('bookForm').querySelectorAll('input,select,textarea,.form-submit,.form-note,h3,p').forEach(el => el.style.display = 'none');
-  document.getElementById('successMsg').style.display = 'block';
+chat.appendChild(container);
 }
 </script>
 </body>
