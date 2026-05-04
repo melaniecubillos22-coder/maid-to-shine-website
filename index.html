@@ -528,21 +528,6 @@ Hi! How can I help with your cleaning today?
 <div style="display:flex;padding:10px;gap:6px;background:white;">
 <input id="chatInput" placeholder="Type here..." style="flex:1;padding:10px;border-radius:20px;border:1px solid #ccc;">
 <button onclick="handleChat()">Send</button>
-async function handleChat() {
-const input = document.querySelector('input[placeholder*="Type"]');
-const message = input.value.trim();
-
-if (!message) return;
-
-input.value = "";
-
-const reply = await sendMessageToBot(message);
-
-console.log("BOT:", reply);
-
-// 👇 TEMP (just to prove it works)
-alert(reply);
-}
 </div>
 </div>
 
