@@ -527,7 +527,7 @@ Hi! How can I help with your cleaning today?
 
 <div style="display:flex;padding:10px;gap:6px;background:white;">
 <input id="chatInput" placeholder="Type here..." style="flex:1;padding:10px;border-radius:20px;border:1px solid #ccc;">
-<button onclick="handleChat()">Send</button>
+<button onclick="sendChat()">Send</button>
 </div>
 </div>
 
@@ -537,110 +537,87 @@ Hi! How can I help with your cleaning today?
 
 <script>
 function toggleChat() {
-const box = document.getElementById("chatBox");
-box.style.display = box.style.display === "none" ? "block" : "none";
+  const box = document.getElementById('chatBox');
+  box.style.display = box.style.display === 'block' ? 'none' : 'block';
 }
 
 async function sendChat() {
-const input = document.querySelector('.chat-input input, #chatInput, input[placeholder*="Type"]');
-const messages = document.querySelector('.chat-messages, #chatMessages');
+  const input = document.getElementById('chatInput');
+  const messages = document.getElementById('chatMessages');
+  const message = input.value.trim();
+  if (!message) return;
 
-const message = input.value.trim();
-if (!message) return;
+  messages.innerHTML += `<div style="text-align:right;margin-bottom:10px;"><div style="display:inline-block;background:#d63384;color:white;padding:10px;border-radius:12px;">${message}</div></div>`;
+  input.value = '';
 
-messages.innerHTML += `<div class="user-msg">${message}</div>`;
-input.value = "";
+  const typing = document.createElement('div');
+  typing.id = 'typing';
+  typing.style.cssText = 'background:white;padding:10px;border-radius:12px;margin-bottom:10px;';
+  typing.textContent = 'Shine is typing...';
+  messages.appendChild(typing);
+  messages.scrollTop = messages.scrollHeight;
 
-const res = await fetch("https://messaging-agent-bboj.onrender.com/chat", {
-method: "POST",
-headers: {"Content-Type": "application/json"},
-body: JSON.stringify({ message })
-});
-
-const data = await res.json();
-
-messages.innerHTML += `<div class="bot-msg">${data.response}</div>`;
-messages.scrollTop = messages.scrollHeight;
-}
-
-try {
-const res = await fetch("https://messaging-agent-bboj.onrender.com/chat", {
-method: "POST",
-headers: {
-"Content-Type": "application/json"
-},
-body: JSON.stringify({ message: message })
-});
-
-const data = await res.json();
-document.getElementById("typing").remove();
-
-messages.innerHTML += `<div style="background:white;padding:10px;border-radius:12px;margin-bottom:10px;">${data.response || "Sorry, I had trouble replying. Please call (786) 327-3682."}</div>`;
-messages.scrollTop = messages.scrollHeight;
-} catch (error) {
-document.getElementById("typing").remove();
-messages.innerHTML += `<div style="background:white;padding:10px;border-radius:12px;margin-bottom:10px;">Please call or text us at (786) 327-3682 🌸</div>`;
-}
-
-document.addEventListener("keydown", function(e) {
-if (e.key === "Enter" && document.activeElement.id === "chatInput") {
-sendChat();
-}
-});
-
-document.querySelectorAll('a[href^="#"]').forEach(a=>{
-    a.addEventListener('click',e=>{
-        const t=document.querySelector(a.getAttribute('href'));
-        if(t){e.preventDefault();t.scrollIntoView({behavior:'smooth'})}
+  try {
+    const res = await fetch('https://messaging-agent-bboj.onrender.com/chat', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ message })
     });
-});
+    const data = await res.json();
+    typing.remove();
 
-const observer=new IntersectionObserver(entries=>{
-    entries.forEach(e=>{if(e.isIntersecting){e.target.style.opacity='1';e.target.style.transform='translateY(0)'}});
-},{threshold:0.08});
-document.querySelectorAll('.svc-card,.why-item,.price-card,.testi-card').forEach(el=>{
-    el.style.opacity='0';el.style.transform='translateY(18px)';el.style.transition='opacity 0.5s,transform 0.5s';
-    observer.observe(el);
-});
+    messages.innerHTML += `<div style="margin-bottom:10px;"><div style="display:inline-block;background:white;padding:10px;border-radius:12px;">${data.response || 'Sorry, I had trouble replying. Please call (786) 327-3682.'}</div></div>`;
+  } catch (error) {
+    typing.remove();
+    messages.innerHTML += `<div style="background:white;padding:10px;border-radius:12px;margin-bottom:10px;">Please call or text us at (786) 327-3682 🌸</div>`;
+  }
 
-function submitForm(){
-    const name=document.getElementById('fname').value.trim();
-    const phone=document.getElementById('fphone').value.trim();
-    const service=document.getElementById('fservice').value;
-    if(!name||!phone||!service){alert('Please fill required fields ');return;}
-    document.getElementById('bookForm').querySelectorAll('input,select,textarea,.form-group,.form-row,.form-submit,.form-note,h3,p').forEach(f=>f.style.display='none');
-    document.getElementById('successMsg').style.display='block';
+  messages.scrollTop = messages.scrollHeight;
 }
 
-async function sendMessageToBot(message) {
-const res = await fetch("https://messaging-agent-bboj.onrender.com/chat", {
-method: "POST",
-headers: {
-"Content-Type": "application/json"
-},
-body: JSON.stringify({ message })
+document.addEventListener('keydown', function(e) {
+  if (e.key === 'Enter' && document.activeElement.id === 'chatInput') {
+    sendChat();
+  }
 });
 
-const data = await res.json();
-return data.response;
+document.querySelectorAll('a[href^="#"]').forEach(a => {
+  a.addEventListener('click', e => {
+    const t = document.querySelector(a.getAttribute('href'));
+    if (t) {
+      e.preventDefault();
+      t.scrollIntoView({ behavior: 'smooth' });
+    }
+  });
+});
+
+const observer = new IntersectionObserver(entries => {
+  entries.forEach(entry => {
+    if (entry.isIntersecting) {
+      entry.target.style.opacity = '1';
+      entry.target.style.transform = 'translateY(0)';
+    }
+  });
+}, { threshold: 0.08 });
+
+document.querySelectorAll('.svc-card,.why-item,.price-card,.testi-card').forEach(el => {
+  el.style.opacity = '0';
+  el.style.transform = 'translateY(18px)';
+  el.style.transition = 'opacity 0.5s, transform 0.5s';
+  observer.observe(el);
+});
+
+function submitForm() {
+  const name = document.getElementById('fname').value.trim();
+  const phone = document.getElementById('fphone').value.trim();
+  const service = document.getElementById('fservice').value;
+  if (!name || !phone || !service) {
+    alert('Please fill required fields 🌸');
+    return;
+  }
+  document.getElementById('bookForm').querySelectorAll('input,select,textarea,.form-submit,.form-note,h3,p').forEach(el => el.style.display = 'none');
+  document.getElementById('successMsg').style.display = 'block';
 }
-
-async function handleChat() {
-const input = document.getElementById("chatInput");
-const messages = document.getElementById("chatMessages");
-const message = input.value.trim();
-
-if (!message) return;
-
-messages.innerHTML += `<div style="text-align:right;margin-bottom:10px;"><div style="display:inline-block;background:#d63384;color:white;padding:10px;border-radius:12px;">${message}</div></div>`;
-input.value = "";
-
-const reply = await sendMessageToBot(message);
-
-messages.innerHTML += `<div style="margin-bottom:10px;"><div style="display:inline-block;background:white;padding:10px;border-radius:12px;">${reply}</div></div>`;
-messages.scrollTop = messages.scrollHeight;
-}
-
 </script>
 </body>
-</html>=
+</html>
