@@ -5,17 +5,17 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
 <!-- ✦ SEO TAGS ✦ -->
-<title>Maid to Shine 🌸 Professional Cleaning Services | Miami, FL</title>
+<title>Maid to Shine  Professional Cleaning Services | Miami, FL</title>
 <meta name="description" content="Maid to Shine — Miami's #1 girly cleaning service. Home cleaning from $100, deep cleans, move-in/out, Airbnb turnovers. Call (786) 475-9638 for a free quote!">
 <meta name="keywords" content="cleaning service Miami, house cleaning Miami FL, maid service Miami, deep cleaning Miami, Airbnb cleaning Miami, move out cleaning Miami, home cleaning Coral Gables, cleaning service Kendall, cleaning service Hialeah, Maid to Shine">
 <meta name="author" content="Maid to Shine">
 <meta name="robots" content="index, follow">
-<meta property="og:title" content="Maid to Shine 🌸 Professional Cleaning Services Miami FL">
+<meta property="og:title" content="Maid to Shine  Professional Cleaning Services Miami FL">
 <meta property="og:description" content="Professional home, deep, move-in/out & Airbnb cleaning in Miami & South Florida. From $80. Call (786) 475-9638!">
 <meta property="og:type" content="website">
 <meta property="og:locale" content="en_US">
 <meta name="twitter:card" content="summary_large_image">
-<meta name="twitter:title" content="Maid to Shine 🌸 Cleaning Services Miami">
+<meta name="twitter:title" content="Maid to Shine Cleaning Services Miami">
 <meta name="twitter:description" content="Miami's favorite cleaning service. Home cleans from $100. Free quotes! (786) 475-9638">
 <link rel="canonical" href="https://maidtoshine.com">
 
@@ -107,7 +107,7 @@ h2 em{font-style:italic;color:var(--hot)}
 .services-sec{background:var(--petal)}
 .svc-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(230px,1fr));gap:1.1rem;margin-top:2.5rem}
 .svc-card{background:#fff;border-radius:22px;padding:1.75rem;border:2px solid var(--blush);transition:all 0.3s;position:relative;overflow:hidden;cursor:pointer}
-.svc-card::after{content:'🌸';position:absolute;bottom:-10px;right:-4px;font-size:60px;opacity:0.07;transition:opacity 0.3s}
+.svc-card::after{content:'';position:absolute;bottom:-10px;right:-4px;font-size:60px;opacity:0.07;transition:opacity 0.3s}
 .svc-card:hover{transform:translateY(-5px);border-color:var(--rose);box-shadow:0 16px 48px rgba(233,30,140,0.12)}
 .svc-card:hover::after{opacity:0.14}
 .svc-icon-wrap{width:54px;height:54px;background:var(--petal2);border-radius:16px;display:flex;align-items:center;justify-content:center;font-size:26px;margin-bottom:1.1rem;border:1.5px solid var(--blush)}
@@ -542,17 +542,26 @@ box.style.display = box.style.display === "none" ? "block" : "none";
 }
 
 async function sendChat() {
-const input = document.getElementById("chatInput");
-const messages = document.getElementById("chatMessages");
-const message = input.value.trim();
+const input = document.querySelector('.chat-input input, #chatInput, input[placeholder*="Type"]');
+const messages = document.querySelector('.chat-messages, #chatMessages');
 
+const message = input.value.trim();
 if (!message) return;
 
-messages.innerHTML += `<div style="background:#d63384;color:white;padding:10px;border-radius:12px;margin-bottom:10px;margin-left:50px;">${message}</div>`;
+messages.innerHTML += `<div class="user-msg">${message}</div>`;
 input.value = "";
 
-messages.innerHTML += `<div id="typing" style="background:white;padding:10px;border-radius:12px;margin-bottom:10px;">Shine is typing...</div>`;
+const res = await fetch("https://messaging-agent-bboj.onrender.com/chat", {
+method: "POST",
+headers: {"Content-Type": "application/json"},
+body: JSON.stringify({ message })
+});
+
+const data = await res.json();
+
+messages.innerHTML += `<div class="bot-msg">${data.response}</div>`;
 messages.scrollTop = messages.scrollHeight;
+}
 
 try {
 const res = await fetch("https://messaging-agent-bboj.onrender.com/chat", {
@@ -571,7 +580,6 @@ messages.scrollTop = messages.scrollHeight;
 } catch (error) {
 document.getElementById("typing").remove();
 messages.innerHTML += `<div style="background:white;padding:10px;border-radius:12px;margin-bottom:10px;">Please call or text us at (786) 475-9638 🌸</div>`;
-}
 }
 
 document.addEventListener("keydown", function(e) {
@@ -599,7 +607,7 @@ function submitForm(){
     const name=document.getElementById('fname').value.trim();
     const phone=document.getElementById('fphone').value.trim();
     const service=document.getElementById('fservice').value;
-    if(!name||!phone||!service){alert('Please fill required fields 🌸');return;}
+    if(!name||!phone||!service){alert('Please fill required fields ');return;}
     document.getElementById('bookForm').querySelectorAll('input,select,textarea,.form-group,.form-row,.form-submit,.form-note,h3,p').forEach(f=>f.style.display='none');
     document.getElementById('successMsg').style.display='block';
 }
