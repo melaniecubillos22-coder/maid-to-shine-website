@@ -548,12 +548,6 @@ Claim My Code
 </div>
 </div>
 
-<div id="chatBox" style="display:none;position:fixed;bottom:90px;right:20px;width:350px;background:white;border:2px solid #d63384;border-radius:18px;box-shadow:0 8px 30px rgba(0,0,0,.25);z-index:9999;overflow:hidden;font-family:Arial;">
-<div style="background:#d63384;color:white;padding:14px;font-weight:bold;">
-🌸 Shine — Booking Assistant
-<button onclick="toggleChat()" style="float:right;background:none;border:none;color:white;font-size:20px;cursor:pointer;">×</button>
-</div>
-
 <!-- CHAT BOX -->
 <div id="chatBox" style="display:none;position:fixed;bottom:90px;right:20px;width:350px;background:white;border:2px solid #d63384;border-radius:18px;box-shadow:0 8px 30px rgba(0,0,0,.25);z-index:9999;overflow:hidden;font-family:Arial;">
 
@@ -571,13 +565,13 @@ Claim My Code
 <input id="chatInput" placeholder="Type here..." style="flex:1;padding:10px;border-radius:20px;border:1px solid #ccc;">
 <button onclick="sendChat()" style="background:#d63384;color:white;border:none;border-radius:50%;width:40px;height:40px;cursor:pointer;">➤</button>
 </div>
-</div>
-<!-- CHAT BUTTON -->
 
-<button onclick="toggleChat()" style="position:fixed;bottom:25px;right:25px;width:60px;height:60px;border-radius:50%;background:#d63384;color:white;border:none;font-size:24px;z-index:9999;box-shadow:0 6px 18px rgba(0,0,0,.25);cursor:pointer;">
+</div>
+
+<!-- CHAT BUTTON -->
+<button onclick="toggleChat()" style="position:fixed;bottom:25px;right:25px;width:60px;height:60px;border-radius:50%;background:#d63384;color:white;border:none;font-size:24px;z-index:9999;box-shadow:0 6px 18px rgba(0,0,0,.25);">
 💬
 </button>
-
 <script>
 let step = "start";
 let lead = {};
