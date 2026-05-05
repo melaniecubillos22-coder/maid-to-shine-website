@@ -512,7 +512,8 @@ footer{background:var(--deeper);padding:1.5rem 2.5rem;display:flex;justify-conte
     <a href="tel:+17863273682" class="mob-btn call">📞 Call Now</a>
     <a href="https://wa.me/17863273682?text=Hi! I'd like to book a cleaning 🌸" class="mob-btn whatsapp">🟢 WhatsApp</a>
 </div>
-<!-- LIVE AI CHATBOT -->
+<!-- MAID TO SHINE CHATBOT + DISCOUNT + LEAD CAPTURE START -->
+
 <form name="chat-leads" netlify hidden>
 <input type="text" name="name">
 <input type="text" name="phone">
@@ -523,6 +524,29 @@ footer{background:var(--deeper);padding:1.5rem 2.5rem;display:flex;justify-conte
 <textarea name="message"></textarea>
 <input type="text" name="agreement">
 </form>
+
+<form name="discount-leads" netlify hidden>
+<input type="email" name="email">
+<input type="tel" name="phone">
+<input type="text" name="discount">
+</form>
+
+<div id="discountPopup" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,.55);z-index:10000;align-items:center;justify-content:center;font-family:Arial;">
+<div style="background:white;width:90%;max-width:390px;border-radius:22px;padding:24px;text-align:center;border:2px solid #d63384;box-shadow:0 10px 40px rgba(0,0,0,.35);">
+<button onclick="closeDiscountPopup()" style="float:right;background:none;border:none;font-size:22px;cursor:pointer;">×</button>
+<h2 style="color:#d63384;margin-bottom:10px;">🌸 Save 10% Today</h2>
+<p style="color:#6D0F3A;margin-bottom:16px;">Enter your email + phone to unlock your Maid to Shine discount code.</p>
+
+<input id="discountEmail" type="email" placeholder="Email address" style="width:100%;padding:12px;margin-bottom:10px;border:1px solid #ddd;border-radius:12px;">
+<input id="discountPhone" type="tel" placeholder="Phone number" style="width:100%;padding:12px;margin-bottom:12px;border:1px solid #ddd;border-radius:12px;">
+
+<button onclick="claimDiscount()" style="width:100%;padding:13px;background:#d63384;color:white;border:none;border-radius:14px;font-weight:bold;cursor:pointer;">
+Claim My Code
+</button>
+
+<p id="discountResult" style="margin-top:14px;color:#6D0F3A;font-weight:bold;"></p>
+</div>
+</div>
 
 <div id="chatBox" style="display:none;position:fixed;bottom:90px;right:20px;width:350px;background:white;border:2px solid #d63384;border-radius:18px;box-shadow:0 8px 30px rgba(0,0,0,.25);z-index:9999;overflow:hidden;font-family:Arial;">
 <div style="background:#d63384;color:white;padding:14px;font-weight:bold;">
@@ -556,6 +580,7 @@ What can we clean for you today?
 <script>
 const BOT_URL = "https://messaging-agent-bboj.onrender.com/chat";
 const BUSINESS_PHONE = "(786) 327-3682";
+const DISCOUNT_CODE = "SHINE10";
 
 let leadStep = null;
 let lead = {
@@ -590,8 +615,7 @@ chat.innerHTML += `
 <div style="display:inline-block;background:#d63384;color:white;padding:8px 12px;border-radius:12px;max-width:80%;">
 ${escapeHtml(msg)}
 </div>
-</div>
-`;
+</div>`;
 chat.scrollTop = chat.scrollHeight;
 }
 
@@ -602,8 +626,7 @@ chat.innerHTML += `
 <div style="display:inline-block;background:white;padding:10px;border-radius:12px;max-width:88%;">
 ${html}
 </div>
-</div>
-`;
+</div>`;
 chat.scrollTop = chat.scrollHeight;
 }
 
@@ -620,12 +643,14 @@ Choose one below 👇<br><br>
 <button onclick="quickSend('Airbnb Cleaning')">🏢 Airbnb</button>
 <button onclick="quickSend('Move Out Cleaning')">📦 Move Out</button>
 <button onclick="startLeadFlow()">💬 Get Quote</button>
+<button onclick="showAgreement()">📄 Agreement</button>
 `);
 }
 
 function startLeadFlow(service = "") {
 if (service) lead.service = service;
 leadStep = "name";
+toggleChat();
 addBot("Perfect ✨ I can get your quote started. What’s your full name?");
 }
 
@@ -676,7 +701,6 @@ if (leadStep === "notes") {
 lead.message = value;
 leadStep = "agreement";
 showAgreement();
-return;
 }
 }
 
@@ -707,6 +731,8 @@ if (!name) {
 addBot("Please type your full name to acknowledge the agreement.");
 return;
 }
+
+if (!lead.name) lead.name = name;
 
 lead.agreement = "Signed by " + name + " at " + new Date().toLocaleString();
 
@@ -811,11 +837,50 @@ addOptions();
 }
 }
 
+function showDiscountPopup() {
+if (localStorage.getItem("discountClaimed")) return;
+document.getElementById("discountPopup").style.display = "flex";
+}
+
+function closeDiscountPopup() {
+document.getElementById("discountPopup").style.display = "none";
+}
+
+function claimDiscount() {
+const email = document.getElementById("discountEmail").value.trim();
+const phone = document.getElementById("discountPhone").value.trim();
+const result = document.getElementById("discountResult");
+
+if (!email || !phone) {
+result.innerHTML = "Please enter your email and phone number.";
+return;
+}
+
+const formData = new FormData();
+formData.append("form-name", "discount-leads");
+formData.append("email", email);
+formData.append("phone", phone);
+formData.append("discount", DISCOUNT_CODE);
+
+fetch("/", {
+method: "POST",
+body: formData
+});
+
+localStorage.setItem("discountClaimed", "true");
+
+result.innerHTML = `Your code is <span style="color:#d63384;">${DISCOUNT_CODE}</span> ✨<br>Use it when booking your cleaning.`;
+}
+
 document.addEventListener("keydown", function(e) {
 if (e.key === "Enter" && document.activeElement.id === "chatInput") {
 sendChat();
 }
 });
+
+setTimeout(showDiscountPopup, 5000);
 </script>
+
+<!-- MAID TO SHINE CHATBOT + DISCOUNT + LEAD CAPTURE END -->
 </body>
 </html>
