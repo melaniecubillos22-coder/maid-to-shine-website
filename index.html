@@ -572,180 +572,464 @@ Claim My Code
 <button onclick="toggleChat()" style="position:fixed;bottom:25px;right:25px;width:60px;height:60px;border-radius:50%;background:#d63384;color:white;border:none;font-size:24px;z-index:9999;box-shadow:0 6px 18px rgba(0,0,0,.25);">
 💬
 </button>
+<!-- MAID TO SHINE COMPLETE CHATBOT + LEADS + DISCOUNT START -->
+
+<form name="chat-leads" netlify hidden>
+<input type="text" name="name">
+<input type="text" name="phone">
+<input type="email" name="email">
+<input type="text" name="service">
+<input type="text" name="address">
+<input type="text" name="date">
+<textarea name="notes"></textarea>
+<input type="text" name="agreement">
+</form>
+
+<form name="discount-leads" netlify hidden>
+<input type="email" name="email">
+<input type="tel" name="phone">
+<input type="text" name="discount">
+</form>
+
+<style>
+.mts-chat-box{
+display:none;position:fixed;bottom:90px;right:20px;width:360px;max-width:92vw;
+background:#fff;border:2px solid #d63384;border-radius:24px;
+box-shadow:0 12px 40px rgba(0,0,0,.25);z-index:9999;overflow:hidden;
+font-family:Arial,sans-serif;
+}
+.mts-chat-head{
+background:linear-gradient(135deg,#d63384,#b91d68);
+color:white;padding:16px;font-weight:800;font-size:18px;
+}
+.mts-close{float:right;background:none;border:none;color:white;font-size:22px;cursor:pointer}
+.mts-messages{height:350px;overflow-y:auto;padding:16px;background:#fff7fb}
+.mts-input-row{display:flex;gap:8px;padding:12px;background:#fff;border-top:1px solid #ffe0f0}
+.mts-input{flex:1;padding:12px;border-radius:999px;border:1px solid #ddd;outline:none}
+.mts-send{width:44px;height:44px;border-radius:50%;border:none;background:#d63384;color:white;cursor:pointer;font-size:18px}
+.mts-bubble-btn{
+position:fixed;bottom:25px;right:25px;width:62px;height:62px;border-radius:50%;
+background:#d63384;color:white;border:none;font-size:26px;z-index:9999;
+box-shadow:0 8px 22px rgba(214,51,132,.4);cursor:pointer;
+}
+.mts-bot-wrap{display:flex;justify-content:flex-start;margin:10px 0}
+.mts-user-wrap{display:flex;justify-content:flex-end;margin:10px 0}
+.mts-bot{
+background:white;color:#6D0F3A;padding:12px 15px;border-radius:22px 22px 22px 6px;
+max-width:82%;font-size:14px;line-height:1.45;box-shadow:0 3px 12px rgba(0,0,0,.08);
+border:1px solid #ffe0f0;
+}
+.mts-user{
+background:linear-gradient(135deg,#ff5fac,#d63384);color:white;padding:12px 15px;
+border-radius:22px 22px 6px 22px;max-width:82%;font-size:14px;line-height:1.45;
+box-shadow:0 4px 12px rgba(214,51,132,.25);
+}
+.mts-option{
+padding:9px 13px;border-radius:999px;border:1px solid #f4c2d7;
+background:linear-gradient(135deg,#fff,#ffe0f0);color:#6D0F3A;
+font-weight:800;cursor:pointer;margin:4px;font-size:13px;
+}
+.mts-option:hover{background:#f8c4da}
+.mts-discount{
+display:none;position:fixed;inset:0;background:rgba(0,0,0,.55);
+z-index:10000;align-items:center;justify-content:center;font-family:Arial;
+}
+.mts-discount-card{
+background:white;width:90%;max-width:390px;border-radius:24px;padding:24px;
+text-align:center;border:2px solid #d63384;box-shadow:0 10px 40px rgba(0,0,0,.35);
+}
+.mts-discount-card input{
+width:100%;padding:12px;margin-bottom:10px;border:1px solid #ddd;border-radius:14px;
+}
+</style>
+
+<div id="discountPopup" class="mts-discount">
+<div class="mts-discount-card">
+<button onclick="closeDiscountPopup()" style="float:right;background:none;border:none;font-size:24px;cursor:pointer;">×</button>
+<h2 style="color:#d63384;margin-bottom:10px;">🌸 Save 10% Today</h2>
+<p style="color:#6D0F3A;margin-bottom:16px;">Enter your email and phone to unlock your Maid to Shine discount code.</p>
+<input id="discountEmail" type="email" placeholder="Email address">
+<input id="discountPhone" type="tel" placeholder="Phone number">
+<button onclick="claimDiscount()" style="width:100%;padding:13px;background:#d63384;color:white;border:none;border-radius:14px;font-weight:bold;cursor:pointer;">Claim My Code</button>
+<p id="discountResult" style="margin-top:14px;color:#6D0F3A;font-weight:bold;"></p>
+</div>
+</div>
+
+<div id="chatBox" class="mts-chat-box">
+<div class="mts-chat-head">
+🌸 Shine — Booking Assistant
+<button class="mts-close" onclick="toggleChat()">×</button>
+</div>
+
+<div id="chatMessages" class="mts-messages"></div>
+
+<div class="mts-input-row">
+<input id="chatInput" class="mts-input" placeholder="Type here...">
+<button class="mts-send" onclick="sendChat()">➤</button>
+</div>
+</div>
+
+<button class="mts-bubble-btn" onclick="toggleChat()">💬</button>
+
 <script>
-let step = "start";
-let lead = {};
+const BUSINESS_PHONE = "(786) 327-3682";
+const DISCOUNT_CODE = "SHINE10";
 
-// SEND MESSAGE
-function sendChat() {
-const input = document.getElementById("chatInput");
-const msg = input.value.trim();
-if (!msg) return;
-input.value = "";
+let chatStarted = false;
+let step = "idle";
+let lead = {
+service:"",
+name:"",
+phone:"",
+email:"",
+address:"",
+date:"",
+notes:"",
+agreement:""
+};
 
-addUser(msg);
-handleFlow(msg.toLowerCase());
-}
-
-// QUICK BUTTON CLICK
-function quickSend(text) {
-addUser(text);
-handleFlow(text.toLowerCase());
-}
-
-// ADD USER BUBBLE
-function addUser(text) {
-const chat = document.getElementById("chatMessages");
-chat.innerHTML += `
-<div style="text-align:right;margin:8px 0;">
-<div style="
-display:inline-block;
-background:linear-gradient(135deg,#ff4da6,#d63384);
-color:white;
-padding:10px 14px;
-border-radius:20px 20px 6px 20px;
-font-size:14px;
-max-width:75%;
-">${text}</div>
-</div>`;
-}
-
-// ADD BOT BUBBLE
-function addBot(text) {
-const chat = document.getElementById("chatMessages");
-chat.innerHTML += `
-<div style="margin:8px 0;">
-<div style="
-display:inline-block;
-background:#fff;
-padding:10px 14px;
-border-radius:20px 20px 20px 6px;
-font-size:14px;
-max-width:75%;
-box-shadow:0 2px 8px rgba(0,0,0,0.1);
-">${text}</div>
-</div>`;
-chat.scrollTop = chat.scrollHeight;
-}
-
-// FLOW LOGIC (REAL CONVERSATION)
-function handleFlow(msg) {
-if (!msg) {
-addBot("Hi 👋 Welcome to Maid to Shine ✨<br><br>What can we clean for you today?");
-showOptions();
-step = "service";
-return;
-}
-
-if (step === "service") {
-lead.service = msg;
-
-if (msg.includes("home")) {
-addBot("🏡 <b>Home Cleaning</b><br>Starting at <b>$100+</b><br><br>Includes dusting, vacuuming, mopping, kitchen wipe-down, bathroom cleaning, trash removal, and general tidy-up.");
-} else if (msg.includes("deep")) {
-addBot("🧼 <b>Deep Cleaning</b><br>Starting at <b>$180+</b><br><br>Best for heavy buildup, baseboards, cabinets, detailed bathroom/kitchen scrubbing, and a full reset clean.");
-} else if (msg.includes("airbnb")) {
-addBot("🏢 <b>Airbnb Turnover</b><br>Starting at <b>$80+</b><br><br>Includes guest-ready cleaning, bathrooms, kitchen, floors, trash, linen change if provided, and restocking basics if available.");
-} else if (msg.includes("move")) {
-addBot("📦 <b>Move-In / Move-Out Cleaning</b><br>Starting at <b>$200+</b><br><br>Includes inside cabinets, bathrooms, kitchen, floors, dusting, baseboards, and empty-home deep cleaning.");
-} else {
-addBot("We offer home cleaning, deep cleaning, Airbnb turnovers, move-in/move-out cleaning, and commercial cleaning.");
-}
-
-addBot("Want me to get your quote started? What’s your full name?");
-step = "name";
-return;
-}
-
-if (step === "name") {
-lead.name = msg;
-addBot("Nice to meet you, " + lead.name + " 💕<br><br>What’s the best phone number?");
-step = "phone";
-return;
-}
-
-if (step === "phone") {
-lead.phone = msg;
-addBot("Got it 📞<br><br>What’s your address or area?");
-step = "address";
-return;
-}
-
-if (step === "address") {
-lead.address = msg;
-addBot("Perfect ✨<br><br>When would you like this done?");
-step = "date";
-return;
-}
-
-if (step === "date") {
-lead.date = msg;
-addBot(`
-🎉 Request received!<br><br>
-🧼 Service: ${lead.service}<br>
-👤 Name: ${lead.name}<br>
-📞 Phone: ${lead.phone}<br>
-📍 Location: ${lead.address}<br>
-📅 Date: ${lead.date}<br><br>
-We’ll review the details and text you shortly to confirm 💕
-`);
-
-sendLeadToEmail(lead);
-step = "done";
-return;
-}
-}
-
-// BUTTON OPTIONS (CLEAN UI)
-function showOptions() {
-const chat = document.getElementById("chatMessages");
-
-chat.innerHTML += `
-<div style="margin:10px 0;display:flex;flex-wrap:wrap;gap:6px;">
-${button("🏡 Home Cleaning")}
-${button("🧼 Deep Cleaning")}
-${button("🏢 Airbnb")}
-${button("📦 Move Out")}
-</div>`;
-}
-
-// BUTTON STYLE
-function button(text) {
-return `
-<button onclick="quickSend('${text}')"
-style="
-padding:6px 12px;
-border-radius:999px;
-border:none;
-background:#ffe0f0;
-color:#d63384;
-font-weight:700;
-cursor:pointer;
-">
-${text}
-</button>`;
-}
-
-// SEND LEAD (CONNECT THIS LATER)
-function sendLeadToEmail(data) {
-fetch("https://your-backend-url.com/lead", {
-method: "POST",
-headers: {
-"Content-Type": "application/json"
-},
-body: JSON.stringify(data)
-});
-}
-
-// OPEN CHAT
-function toggleChat() {
-const box = document.getElementById("chatBox");
+function toggleChat(){
+const box=document.getElementById("chatBox");
 box.style.display = box.style.display === "block" ? "none" : "block";
 
-if (step === "start") handleFlow();
+if(!chatStarted){
+chatStarted=true;
+greeting();
 }
+}
+
+function escapeHtml(text){
+return String(text)
+.replaceAll("&","&amp;")
+.replaceAll("<","&lt;")
+.replaceAll(">","&gt;")
+.replaceAll('"',"&quot;")
+.replaceAll("'","&#039;");
+}
+
+function addUser(text){
+const chat=document.getElementById("chatMessages");
+chat.innerHTML += `
+<div class="mts-user-wrap">
+<div class="mts-user">${escapeHtml(text)}</div>
+</div>`;
+chat.scrollTop=chat.scrollHeight;
+}
+
+function addBot(html){
+const chat=document.getElementById("chatMessages");
+chat.innerHTML += `
+<div class="mts-bot-wrap">
+<div class="mts-bot">${html}</div>
+</div>`;
+chat.scrollTop=chat.scrollHeight;
+}
+
+function optionButton(label,value){
+return `<button class="mts-option" onclick="quickSend('${value}')">${label}</button>`;
+}
+
+function showOptions(){
+addBot(`
+Choose a service 👇<br><br>
+${optionButton("🏡 Home Cleaning","Home Cleaning")}
+${optionButton("🧼 Deep Cleaning","Deep Cleaning")}
+${optionButton("🏢 Airbnb","Airbnb Cleaning")}
+${optionButton("📦 Move Out","Move Out Cleaning")}
+${optionButton("💬 Get Quote","Get Quote")}
+${optionButton("📄 Agreement","Agreement")}
+`);
+}
+
+function greeting(){
+addBot(`
+Hi 👋 Welcome to <b>Maid to Shine</b> ✨<br><br>
+I can answer questions, explain pricing, collect your quote details, and send your request to our team.
+`);
+showOptions();
+}
+
+function quickSend(text){
+addUser(text);
+handleMessage(text);
+}
+
+function sendChat(){
+const input=document.getElementById("chatInput");
+const msg=input.value.trim();
+if(!msg) return;
+
+addUser(msg);
+input.value="";
+handleMessage(msg);
+}
+
+function serviceInfo(service){
+lead.service = service;
+
+if(service.toLowerCase().includes("home")){
+addBot(`
+🏡 <b>Home Cleaning</b><br>
+Starts at <b>$100+</b> depending on size and condition.<br><br>
+Includes bathrooms, kitchen wipe-down, dusting, floors, trash, bedrooms, and general tidy-up.
+`);
+} else if(service.toLowerCase().includes("deep")){
+addBot(`
+🧼 <b>Deep Cleaning</b><br>
+Starts at <b>$180+</b> depending on buildup and property size.<br><br>
+Best for baseboards, heavier bathroom/kitchen detail, cabinets, grease, dust buildup, and full reset cleans.
+`);
+} else if(service.toLowerCase().includes("airbnb")){
+addBot(`
+🏢 <b>Airbnb Turnover</b><br>
+Starts at <b>$80+</b> depending on unit size and turnover needs.<br><br>
+Includes guest-ready cleaning, bathrooms, kitchen, floors, trash, linen change if provided, and restocking basics if available.
+`);
+} else if(service.toLowerCase().includes("move")){
+addBot(`
+📦 <b>Move-In / Move-Out Cleaning</b><br>
+Starts at <b>$200+</b> depending on property condition.<br><br>
+Includes empty-home deep cleaning, inside cabinets, bathrooms, kitchen, floors, baseboards, and dust removal.
+`);
+}
+
+addBot("Want me to get your quote started?");
+addBot(`
+${optionButton("Yes, start quote","Start Quote")}
+${optionButton("Show agreement","Agreement")}
+`);
+}
+
+function startLeadFlow(){
+step="name";
+addBot("Perfect ✨ What’s your full name?");
+}
+
+function handleLeadFlow(msg){
+if(step==="name"){
+lead.name=msg;
+step="phone";
+addBot(`Nice to meet you, <b>${escapeHtml(lead.name)}</b> 💕<br><br>What’s the best phone number to reach you?`);
+return;
+}
+
+if(step==="phone"){
+lead.phone=msg;
+step="email";
+addBot("Got it 📞 What’s your email?");
+return;
+}
+
+if(step==="email"){
+lead.email=msg;
+step="service";
+addBot("What service do you need?");
+showOptions();
+return;
+}
+
+if(step==="service"){
+lead.service=msg;
+step="address";
+addBot("What’s the property address or area?");
+return;
+}
+
+if(step==="address"){
+lead.address=msg;
+step="date";
+addBot("What date or time frame works best?");
+return;
+}
+
+if(step==="date"){
+lead.date=msg;
+step="notes";
+addBot("Any notes? Pets, smoking, heavy mess, Airbnb turnover, move-out condition, or anything special?");
+return;
+}
+
+if(step==="notes"){
+lead.notes=msg;
+step="agreement";
+showAgreement();
+return;
+}
+}
+
+function answerQuestion(msg){
+const lower=msg.toLowerCase();
+
+if(lower.includes("price") || lower.includes("cost") || lower.includes("how much")){
+addBot("Pricing depends on the service, size, and condition. Home cleaning starts at <b>$100+</b>, deep cleaning at <b>$180+</b>, Airbnb at <b>$80+</b>, and move-out cleaning at <b>$200+</b>.");
+showOptions();
+return true;
+}
+
+if(lower.includes("smoking") || lower.includes("smoke")){
+addBot("Yes, we can clean homes with smoking odor or residue, but extra fees may apply depending on the condition and odor level.");
+return true;
+}
+
+if(lower.includes("pet")){
+addBot("Yes, pet homes are okay 🐾 Heavy pet hair or pet waste may require an extra fee depending on the condition.");
+return true;
+}
+
+if(lower.includes("same day") || lower.includes("today")){
+addBot("Same-day cleaning may be available depending on schedule. Same-day or emergency cleanings may include an extra fee.");
+startLeadFlow();
+return true;
+}
+
+if(lower.includes("area") || lower.includes("location") || lower.includes("where")){
+addBot("We serve Miami and surrounding areas including Coral Gables, Kendall, Hialeah, Doral, Aventura, Miami Beach, Homestead, and Cutler Bay.");
+return true;
+}
+
+return false;
+}
+
+function handleMessage(msg){
+const lower=msg.toLowerCase();
+
+if(step !== "idle" && step !== "agreement"){
+handleLeadFlow(msg);
+return;
+}
+
+if(lower.includes("start quote") || lower.includes("get quote") || lower.includes("book")){
+startLeadFlow();
+return;
+}
+
+if(lower.includes("agreement") || lower.includes("contract") || lower.includes("sign")){
+showAgreement();
+return;
+}
+
+if(lower.includes("home cleaning")){
+serviceInfo("Home Cleaning");
+return;
+}
+
+if(lower.includes("deep cleaning")){
+serviceInfo("Deep Cleaning");
+return;
+}
+
+if(lower.includes("airbnb")){
+serviceInfo("Airbnb Cleaning");
+return;
+}
+
+if(lower.includes("move out") || lower.includes("move-in") || lower.includes("move in")){
+serviceInfo("Move Out Cleaning");
+return;
+}
+
+if(answerQuestion(msg)) return;
+
+addBot("Yes, I can help with that ✨ What type of cleaning are you looking for?");
+showOptions();
+}
+
+function showAgreement(){
+step="agreement";
+addBot(`
+<b>Maid to Shine Cleaning Agreement</b><br><br>
+Before confirming, please acknowledge possible extra fees if applicable:<br><br>
+🚬 Smoking odor/residue fee<br>
+🐾 Pet waste or heavy pet hair fee<br>
+🗑️ Excessive trash/clutter fee<br>
+🧽 Heavy grime, grease, mold, or biohazard fee<br>
+📦 Move-out debris or abandoned items fee<br>
+⏰ Same-day/emergency fee<br><br>
+Type your full name below to acknowledge.
+<br><br>
+<input id="signatureName" placeholder="Full name" style="width:100%;padding:10px;border-radius:10px;border:1px solid #ccc;">
+<button onclick="submitAgreement()" style="width:100%;margin-top:8px;padding:11px;background:#d63384;color:white;border:none;border-radius:12px;font-weight:bold;cursor:pointer;">I Agree & Sign</button>
+`);
+}
+
+function submitAgreement(){
+const input=document.getElementById("signatureName");
+const name=input ? input.value.trim() : "";
+
+if(!name){
+addBot("Please type your full name to acknowledge the agreement.");
+return;
+}
+
+if(!lead.name) lead.name=name;
+lead.agreement="Signed by " + name + " at " + new Date().toLocaleString();
+
+submitLead();
+
+addBot(`
+Thank you, <b>${escapeHtml(name)}</b> ✅<br><br>
+Your request and agreement acknowledgment were received. We’ll review your details and reach out shortly.<br><br>
+Call/text: <b>${BUSINESS_PHONE}</b>
+`);
+
+step="idle";
+}
+
+function submitLead(){
+const formData=new FormData();
+formData.append("form-name","chat-leads");
+formData.append("name",lead.name || "");
+formData.append("phone",lead.phone || "");
+formData.append("email",lead.email || "");
+formData.append("service",lead.service || "");
+formData.append("address",lead.address || "");
+formData.append("date",lead.date || "");
+formData.append("notes",lead.notes || "");
+formData.append("agreement",lead.agreement || "");
+
+fetch("/",{method:"POST",body:formData});
+}
+
+function showDiscountPopup(){
+if(localStorage.getItem("discountClaimed")) return;
+document.getElementById("discountPopup").style.display="flex";
+}
+
+function closeDiscountPopup(){
+document.getElementById("discountPopup").style.display="none";
+}
+
+function claimDiscount(){
+const email=document.getElementById("discountEmail").value.trim();
+const phone=document.getElementById("discountPhone").value.trim();
+const result=document.getElementById("discountResult");
+
+if(!email || !phone){
+result.innerHTML="Please enter your email and phone number.";
+return;
+}
+
+const formData=new FormData();
+formData.append("form-name","discount-leads");
+formData.append("email",email);
+formData.append("phone",phone);
+formData.append("discount",DISCOUNT_CODE);
+
+fetch("/",{method:"POST",body:formData});
+localStorage.setItem("discountClaimed","true");
+
+result.innerHTML=`Your code is <span style="color:#d63384;">${DISCOUNT_CODE}</span> ✨`;
+}
+
+document.addEventListener("keydown",function(e){
+if(e.key==="Enter" && document.activeElement.id==="chatInput"){
+sendChat();
+}
+});
+
+setTimeout(showDiscountPopup,5000);
 </script>
 
-<!-- MAID TO SHINE CHATBOT + DISCOUNT + LEAD CAPTURE END -->
+<!-- MAID TO SHINE COMPLETE CHATBOT + LEADS + DISCOUNT END -->
 </body>
 </html>
