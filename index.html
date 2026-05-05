@@ -611,8 +611,17 @@ return String(text)
 function addUser(msg) {
 const chat = document.getElementById("chatMessages");
 chat.innerHTML += `
-<div style="text-align:right;margin-bottom:8px;">
-<div style="display:inline-block;background:#d63384;color:white;padding:8px 12px;border-radius:12px;max-width:80%;">
+<div style="display:flex;justify-content:flex-end;margin:10px 0;">
+<div style="
+background:linear-gradient(135deg,#d63384,#ff6fb5);
+color:white;
+padding:11px 14px;
+border-radius:18px 18px 4px 18px;
+max-width:78%;
+font-size:14px;
+line-height:1.4;
+box-shadow:0 4px 12px rgba(214,51,132,.25);
+">
 ${escapeHtml(msg)}
 </div>
 </div>`;
@@ -622,8 +631,18 @@ chat.scrollTop = chat.scrollHeight;
 function addBot(html) {
 const chat = document.getElementById("chatMessages");
 chat.innerHTML += `
-<div style="margin-bottom:8px;">
-<div style="display:inline-block;background:white;padding:10px;border-radius:12px;max-width:88%;">
+<div style="display:flex;justify-content:flex-start;margin:10px 0;">
+<div style="
+background:#ffffff;
+color:#6D0F3A;
+padding:11px 14px;
+border-radius:18px 18px 18px 4px;
+max-width:82%;
+font-size:14px;
+line-height:1.45;
+box-shadow:0 4px 12px rgba(0,0,0,.08);
+border:1px solid #ffe0f0;
+">
 ${html}
 </div>
 </div>`;
@@ -637,6 +656,13 @@ sendChat();
 
 function addOptions() {
 addBot(`
+btn.style.padding = "8px 12px";
+btn.style.borderRadius = "999px";
+btn.style.border = "1px solid #f4c2d7";
+btn.style.background = "linear-gradient(135deg,#fff,#ffe0f0)";
+btn.style.color = "#6D0F3A";
+btn.style.fontWeight = "700";
+btn.style.cursor = "pointer";
 Choose one below 👇<br><br>
 <button onclick="quickSend('Home Cleaning')">🏡 Home Cleaning</button>
 <button onclick="quickSend('Deep Cleaning')">🧼 Deep Cleaning</button>
