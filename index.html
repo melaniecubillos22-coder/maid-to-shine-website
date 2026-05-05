@@ -656,20 +656,13 @@ sendChat();
 
 function addOptions() {
 addBot(`
-btn.style.padding = "8px 12px";
-btn.style.borderRadius = "999px";
-btn.style.border = "1px solid #f4c2d7";
-btn.style.background = "linear-gradient(135deg,#fff,#ffe0f0)";
-btn.style.color = "#6D0F3A";
-btn.style.fontWeight = "700";
-btn.style.cursor = "pointer";
 Choose one below 👇<br><br>
-<button onclick="quickSend('Home Cleaning')">🏡 Home Cleaning</button>
-<button onclick="quickSend('Deep Cleaning')">🧼 Deep Cleaning</button>
-<button onclick="quickSend('Airbnb Cleaning')">🏢 Airbnb</button>
-<button onclick="quickSend('Move Out Cleaning')">📦 Move Out</button>
-<button onclick="startLeadFlow()">💬 Get Quote</button>
-<button onclick="showAgreement()">📄 Agreement</button>
+<button onclick="quickSend('Home Cleaning')" style="padding:8px 12px;border-radius:999px;border:1px solid #f4c2d7;background:linear-gradient(135deg,#fff,#ffe0f0);color:#6D0F3A;font-weight:700;cursor:pointer;margin:3px;">🏡 Home Cleaning</button>
+<button onclick="quickSend('Deep Cleaning')" style="padding:8px 12px;border-radius:999px;border:1px solid #f4c2d7;background:linear-gradient(135deg,#fff,#ffe0f0);color:#6D0F3A;font-weight:700;cursor:pointer;margin:3px;">🧼 Deep Cleaning</button>
+<button onclick="quickSend('Airbnb Cleaning')" style="padding:8px 12px;border-radius:999px;border:1px solid #f4c2d7;background:linear-gradient(135deg,#fff,#ffe0f0);color:#6D0F3A;font-weight:700;cursor:pointer;margin:3px;">🏢 Airbnb</button>
+<button onclick="quickSend('Move Out Cleaning')" style="padding:8px 12px;border-radius:999px;border:1px solid #f4c2d7;background:linear-gradient(135deg,#fff,#ffe0f0);color:#6D0F3A;font-weight:700;cursor:pointer;margin:3px;">📦 Move Out</button>
+<button onclick="startLeadFlow()" style="padding:8px 12px;border-radius:999px;border:1px solid #f4c2d7;background:linear-gradient(135deg,#fff,#ffe0f0);color:#6D0F3A;font-weight:700;cursor:pointer;margin:3px;">💬 Get Quote</button>
+<button onclick="showAgreement()" style="padding:8px 12px;border-radius:999px;border:1px solid #f4c2d7;background:linear-gradient(135deg,#fff,#ffe0f0);color:#6D0F3A;font-weight:700;cursor:pointer;margin:3px;">📄 Agreement</button>
 `);
 }
 
